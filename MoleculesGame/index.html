@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Molecule Builder - Methane</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .element-pool {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .atom {
+      width: 50px;
+      height: 50px;
+      background-color: lightgray;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px;
+      font-size: 20px;
+      cursor: grab;
+    }
+
+    .hydrogen {
+      background-color: #e56895;
+    }
+
+    .carbon {
+      background-color: #5e5bf5;
+    }
+
+    .playground {
+      width: 100%;
+      height: 300px;
+      border: 2px solid #000;
+      background-image: url("page 39.png");
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .dropped-atom {
+      position: absolute;
+    }
+
+    .message-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    .message {
+      font-size: 20px;
+      color: rgb(89, 28, 138);
+      text-align: center;
+      display: flex;
+      align-items: center;
+    }
+
+    .button {
+      padding: 5px 10px;
+      background-color: #7293e4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #edabc3;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+      }
+
+      .element-pool {
+        width: 10%;
+        flex-direction: column;
+      }
+
+      .playground {
+        width: 70%;
+        height: 500px;
+      }
+
+      .message {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="element-pool">
+      <div class="atom hydrogen" draggable="true">H</div>
+      <div class="atom carbon" draggable="true">C</div>
+    </div>
+
+    <div class="playground" id="playground">
+    </div>
+  </div>
+
+  <div class="message-container">
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    const atoms = document.querySelectorAll('.atom');
+    const playground = document.getElementById('playground');
+    const message = document.getElementById('message');
+    let hydrogenCount = 0;
+    let carbonCount = 0;
+
+    atoms.forEach(atom => {
+      atom.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', atom.className);
+      });
+    });
+
+    playground.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    playground.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const atomClass = e.dataTransfer.getData('text/plain');
+      
+      const newAtom = document.createElement('div');
+      newAtom.className = atomClass + ' dropped-atom';
+      newAtom.style.left = e.clientX - playground.offsetLeft + 'px';
+      newAtom.style.top = e.clientY - playground.offsetTop + 'px';
+      
+      playground.appendChild(newAtom);
+      
+      if (atomClass.includes('hydrogen')) {
+        hydrogenCount++;
+      } else if (atomClass.includes('carbon')) {
+        carbonCount++;
+      }
+
+      checkForMethane();
+    });
+
+    function checkForMethane() {
+      if (carbonCount === 1 && hydrogenCount === 4) {
+        message.innerHTML = 'Methane (CH₄)! <button class="button">3D</button>';
+      }
+    }
+  </script>
+</body>
+</html>
